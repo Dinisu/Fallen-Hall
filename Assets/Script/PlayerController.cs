@@ -16,6 +16,16 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float minFallSpeed = 2f;
     [SerializeField] private float maxFallSpeed = 20f;
 
+    [Header("ダメージ設定")]
+    [SerializeField] private int maxHp = 3;
+    [SerializeField] private float damageInterval = 0.5f;
+
+    [Header("反発設定")]
+    [SerializeField] private float knockbackForce = 5f;
+
+    private int currentHp;
+    private float lastDamageTime = -Mathf.Infinity;
+
     private Rigidbody2D rb;
 
     private Vector2 moveInput;
@@ -23,6 +33,7 @@ public class PlayerController : MonoBehaviour
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
+        currentHp = maxHp;
     }
 
     private void Update()
@@ -89,20 +100,20 @@ public class PlayerController : MonoBehaviour
     /// </summary>
     private void ControlFallSpeed()
     {
-        // 上入力：落下を加速
-        if (moveInput.y > 0)
+        // 上入力：落下を減速
+        if (moveInput.y > 0 && rb.linearVelocity.y < 0)
         {
             rb.AddForce(
-                Vector2.down * fallAcceleration,
+                Vector2.up * fallDeceleration,
                 ForceMode2D.Force
             );
         }
 
-        // 下入力：落下を減速
+        // 下入力：落下を加速
         else if (moveInput.y < 0)
         {
             rb.AddForce(
-                Vector2.up * fallDeceleration,
+                Vector2.down * fallAcceleration,
                 ForceMode2D.Force
             );
         }
@@ -128,12 +139,48 @@ public class PlayerController : MonoBehaviour
             velocity.y = -maxFallSpeed;
         }
 
-        // 落下中の最低速度
-        if (velocity.y < 0 && velocity.y > -minFallSpeed)
+        // 減速入力中、落下速度が最低速度より遅くなったら補正
+        if (moveInput.y > 0 &&
+            velocity.y < 0 &&
+            velocity.y > -minFallSpeed)
         {
             velocity.y = -minFallSpeed;
         }
 
         rb.linearVelocity = velocity;
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        // ダメージ間隔中なら処理しない
+        if (Time.time < lastDamageTime + damageInterval)
+            return;
+
+        lastDamageTime = Time.time;
+
+        // HPを減らす
+        currentHp--;
+        Debug.Log($"ダメージ！ 残りHP：{currentHp}");
+
+        // 接触箇所からプレイヤーの中心へ向かう方向を取得
+        ContactPoint2D contact = collision.GetContact(0);
+
+        Vector2 knockbackDirection =
+            ((Vector2)transform.position - contact.point).normalized;
+
+        // 接触位置がプレイヤーの中心に近い場合の保険
+        if (knockbackDirection == Vector2.zero)
+        {
+            knockbackDirection = -rb.linearVelocity.normalized;
+        }
+
+        // 接触箇所の反対側へ弾く
+        rb.AddForce(knockbackDirection * knockbackForce, ForceMode2D.Impulse);
+
+        if (currentHp <= 0)
+        {
+            Debug.Log("ゲームオーバー！");
+            // 後でゲームオーバー処理を追加
+        }
     }
 }

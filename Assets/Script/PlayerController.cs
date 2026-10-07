@@ -179,8 +179,7 @@ public class PlayerController : MonoBehaviour
 
         if (currentHp <= 0)
         {
-            Debug.Log("ゲームオーバー！");
-            // 後でゲームオーバー処理を追加
+            GameManager.Instance.GameOver();
         }
     }
 }

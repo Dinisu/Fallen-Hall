@@ -12,7 +12,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float fallDeceleration = 2f;
 
     [Header("速度制限")]
-    [SerializeField] private float maxHorizontalSpeed = 8f;
+    [SerializeField] private float maxHorizontalSpeed = 8f; //入力による最大速度
     [SerializeField] private float minFallSpeed = 2f;
     [SerializeField] private float maxFallSpeed = 20f;
 
@@ -89,6 +89,13 @@ public class PlayerController : MonoBehaviour
         if (moveInput.x == 0)
             return;
 
+        // 入力方向の速度が上限に達していたら加速しない
+        if (moveInput.x > 0 && rb.linearVelocity.x >= maxHorizontalSpeed)
+            return;
+
+        if (moveInput.x < 0 && rb.linearVelocity.x <= -maxHorizontalSpeed)
+            return;
+
         rb.AddForce(
             Vector2.right * moveInput.x * horizontalForce,
             ForceMode2D.Force
@@ -101,7 +108,9 @@ public class PlayerController : MonoBehaviour
     private void ControlFallSpeed()
     {
         // 上入力：落下を減速
-        if (moveInput.y > 0 && rb.linearVelocity.y < 0)
+        // 最低落下速度より速く落下している間だけ減速力を加える
+        if (moveInput.y > 0 &&
+            rb.linearVelocity.y < -minFallSpeed)
         {
             rb.AddForce(
                 Vector2.up * fallDeceleration,
@@ -126,25 +135,10 @@ public class PlayerController : MonoBehaviour
     {
         Vector2 velocity = rb.linearVelocity;
 
-        // 横方向の速度制限
-        velocity.x = Mathf.Clamp(
-            velocity.x,
-            -maxHorizontalSpeed,
-            maxHorizontalSpeed
-        );
-
-        // 下方向への速度制限
+        // 下方向への最大速度制限
         if (velocity.y < -maxFallSpeed)
         {
             velocity.y = -maxFallSpeed;
-        }
-
-        // 減速入力中、落下速度が最低速度より遅くなったら補正
-        if (moveInput.y > 0 &&
-            velocity.y < 0 &&
-            velocity.y > -minFallSpeed)
-        {
-            velocity.y = -minFallSpeed;
         }
 
         rb.linearVelocity = velocity;

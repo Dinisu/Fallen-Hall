@@ -74,12 +74,10 @@ public class StageGenerator : MonoBehaviour
         // 次の生成位置を下げる
         nextSpawnPieceY -= pieceHeight;
 
-        // Prefabを順番に使用し、最後まで行ったら最初に戻る
-        nextStagePieceIndex++;
-
-        if (nextStagePieceIndex >= stagePrefabs.Length)
+        // Prefabの範囲内でランダムに選択
+        if (stagePrefabs != null && stagePrefabs.Length > 0)
         {
-            nextStagePieceIndex = 0;
+            nextStagePieceIndex = Random.Range(0, stagePrefabs.Length);
         }
     }
 

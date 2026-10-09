@@ -256,9 +256,9 @@ MonoBehaviour:
   - {fileID: 3450544383351659440, guid: 9ea23c9a762df96499c1c0e563d9a086, type: 3}
   - {fileID: 3450544383351659440, guid: 9abf3c732cfc0d340a572bd136c3e91e, type: 3}
   pieceHeight: 20
-  initialPieceCount: 5
+  initialPieceCount: 8
   spawnAheadDistance: 40
-  deleteBehindDistance: 30
+  deleteBehindDistance: 60
 --- !u!4 &453114540
 Transform:
   m_ObjectHideFlags: 0
@@ -550,7 +550,7 @@ MonoBehaviour:
   maxFallSpeed: 20
   maxHp: 3
   damageInterval: 0.5
-  knockbackForce: 7
+  knockbackForce: 14
 --- !u!58 &774734001
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -846,7 +846,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -240, y: 195}
+  m_AnchoredPosition: {x: -240, y: 200}
   m_SizeDelta: {x: 300, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1796852460

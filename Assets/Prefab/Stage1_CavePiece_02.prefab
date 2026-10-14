@@ -371,6 +371,7 @@ GameObject:
   - component: {fileID: 720978751046279361}
   - component: {fileID: 6486157509681979647}
   - component: {fileID: 8869988759902190327}
+  - component: {fileID: 6074695134135874857}
   m_Layer: 0
   m_Name: Obstacle_Rock_01
   m_TagString: Untagged
@@ -487,6 +488,23 @@ CircleCollider2D:
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
   m_Radius: 0.5
+--- !u!114 &6074695134135874857
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6838087321836936521}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 07228a46fc7c2e64795d8c6668e70d83, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ObjectEffectController
+  objectType: 2
+  springBounceSpeed: 12
+  springCooldown: 0.25
+  recoverAmount: 1
+  destroyAfterUse: 1
 --- !u!1 &6839101720616998813
 GameObject:
   m_ObjectHideFlags: 0

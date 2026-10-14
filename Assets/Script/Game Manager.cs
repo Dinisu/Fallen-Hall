@@ -9,6 +9,10 @@ public class GameManager : MonoBehaviour
     [Header("深度UI")]
     [SerializeField] private TextMeshProUGUI depthText;
 
+    [Header("ゲームオーバーUI")]
+    [SerializeField] private TextMeshProUGUI gameOverText;
+    [SerializeField] private TextMeshProUGUI scoreText;
+
     private bool isGameOver = false;
 
     public static GameManager Instance { get; private set; }
@@ -47,8 +51,20 @@ public class GameManager : MonoBehaviour
 
         isGameOver = true;
 
-        Debug.Log("ゲームオーバー");
+        // プレイヤーの深度を取得
+        float depth = Mathf.Max(0f, -player.position.y);
 
-        // 後でゲームオーバーUIなどをここに追加
+        // スコアと深度を表示
+        scoreText.text = $"スコア\n深度：{depth:F1}m";
+
+        // 深度を非表示
+        depthText.gameObject.SetActive(false);
+        // ゲームオーバーUIを表示
+        gameOverText.gameObject.SetActive(true);
+
+        // ゲームを停止
+        Time.timeScale = 0f;
+
+        Debug.Log("ゲームオーバー");
     }
 }

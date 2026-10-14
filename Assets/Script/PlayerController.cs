@@ -146,6 +146,13 @@ public class PlayerController : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
+        // ダメージを与えないオブジェクトなら終了
+        ObjectEffectController objectEffect =
+            collision.gameObject.GetComponentInParent<ObjectEffectController>();
+
+        if (objectEffect != null && !objectEffect.ShouldDamagePlayer)
+            return;
+
         // ダメージ間隔中なら処理しない
         if (Time.time < lastDamageTime + damageInterval)
             return;
@@ -175,5 +182,34 @@ public class PlayerController : MonoBehaviour
         {
             GameManager.Instance.GameOver();
         }
+    }
+
+    /// <summary>
+    /// HPを回復
+    /// 回復できた場合はtrueを返す
+    /// </summary>
+    public bool TryHeal(int amount)
+    {
+        if (amount <= 0 || currentHp >= maxHp)
+            return false;
+
+        int previousHp = currentHp;
+
+        currentHp = Mathf.Min(currentHp + amount, maxHp);
+
+        Debug.Log($"HP回復！ {previousHp} → {currentHp}");
+
+        return true;
+    }
+
+    /// <summary>
+    /// 上方向へ反発
+    /// </summary>
+    public void Bounce(float upwardSpeed)
+    {
+        rb.linearVelocity = new Vector2(
+            rb.linearVelocity.x,
+            upwardSpeed
+        );
     }
 }

@@ -550,7 +550,7 @@ MonoBehaviour:
   maxFallSpeed: 20
   maxHp: 3
   damageInterval: 0.5
-  knockbackForce: 14
+  knockbackForce: 10
 --- !u!58 &774734001
 CircleCollider2D:
   m_ObjectHideFlags: 0

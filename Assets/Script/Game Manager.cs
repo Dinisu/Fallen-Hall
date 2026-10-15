@@ -13,7 +13,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI gameOverText;
     [SerializeField] private TextMeshProUGUI scoreText;
 
-    private bool isGameOver = false;
+    public bool isGameOver = false;
 
     public static GameManager Instance { get; private set; }
 

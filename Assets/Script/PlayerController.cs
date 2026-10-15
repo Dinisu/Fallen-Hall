@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
 [RequireComponent(typeof(Rigidbody2D))]
 public class PlayerController : MonoBehaviour
@@ -59,6 +60,26 @@ public class PlayerController : MonoBehaviour
 
         if (keyboard == null)
             return;
+
+        // ゲームオーバー中の入力
+        if (GameManager.Instance != null &&
+            GameManager.Instance.isGameOver)
+        {
+            // スペースキーでシーンを再読み込み
+            if (keyboard.spaceKey.wasPressedThisFrame)
+            {
+                // 時間停止を解除
+                Time.timeScale = 1f;
+
+                // 現在のシーンを再読み込み
+                SceneManager.LoadScene(
+                    SceneManager.GetActiveScene().buildIndex
+                );
+            }
+
+            // ゲームオーバー中は移動入力を受け付けない
+            return;
+        }
 
         // 左右入力
         if (keyboard.leftArrowKey.isPressed || keyboard.aKey.isPressed)

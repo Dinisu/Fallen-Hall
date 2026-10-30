@@ -2,235 +2,131 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 
-[RequireComponent(typeof(Rigidbody2D))]
 public class PlayerController : MonoBehaviour
 {
-    [Header("ˆÚ“®İ’è")]
-    [SerializeField] private float horizontalForce = 5f;
-
-    [Header("—‰ºİ’è")]
-    [SerializeField] private float fallAcceleration = 2f;
-    [SerializeField] private float fallDeceleration = 2f;
-
-    [Header("‘¬“x§ŒÀ")]
-    [SerializeField] private float maxHorizontalSpeed = 8f; //“ü—Í‚É‚æ‚éÅ‘å‘¬“x
-    [SerializeField] private float minFallSpeed = 2f;
-    [SerializeField] private float maxFallSpeed = 20f;
-
-    [Header("ƒ_ƒ[ƒWİ’è")]
+    // HPã®åˆæœŸå€¤ã¨ã€é€£ç¶šã—ã¦ãƒ€ãƒ¡ãƒ¼ã‚¸ã‚’å—ã‘ã‚‹ã®ã‚’é˜²ãå¾…ã¡æ™‚é–“ã§ã™ã€‚
+    [Header("ãƒ€ãƒ¡ãƒ¼ã‚¸è¨­å®š")]
     [SerializeField] private int maxHp = 3;
     [SerializeField] private float damageInterval = 0.5f;
 
-    [Header("”½”­İ’è")]
-    [SerializeField] private float knockbackForce = 5f;
-
     private int currentHp;
     private float lastDamageTime = -Mathf.Infinity;
-
-    private Rigidbody2D rb;
-
     private Vector2 moveInput;
+    private PlayerPhysicsController physicsController;
+
+    // GameManagerã‚„ç‰©ç†åˆ¶å¾¡å´ãŒHPã¨å…¥åŠ›ã‚’å‚ç…§ã™ã‚‹ãŸã‚ã®èª­ã¿å–ã‚Šå°‚ç”¨ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ã§ã™ã€‚
+    public int CurrentHp => currentHp;
+    public int MaxHp => maxHp;
+    public Vector2 MoveInput => moveInput;
 
     private void Awake()
     {
-        rb = GetComponent<Rigidbody2D>();
+        // HPã‚’åˆæœŸåŒ–ã—ã€ç§»å‹•ãƒ»åç™ºã‚’æ‹…å½“ã™ã‚‹ç‰©ç†ã‚³ãƒ³ãƒãƒ¼ãƒãƒ³ãƒˆã‚’å–å¾—ã—ã¾ã™ã€‚
         currentHp = maxHp;
+        physicsController = GetComponent<PlayerPhysicsController>();
     }
 
     private void Update()
     {
+        // å…¥åŠ›ã¯Updateã§èª­ã¿å–ã‚Šã€PlayerPhysicsControllerãŒFixedUpdateã§ç§»å‹•ã«ä½¿ã„ã¾ã™ã€‚
         GetInput();
     }
 
-    private void FixedUpdate()
-    {
-        MoveHorizontal();
-        ControlFallSpeed();
-        LimitSpeed();
-    }
-
-    /// <summary>
-    /// “ü—Í‚ğæ“¾
-    /// </summary>
     private void GetInput()
     {
+        // ã‚­ãƒ¼ã‚’é›¢ã—ãŸçŠ¶æ…‹ã‚„ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰æœªæ¥ç¶šæ™‚ã«å‰ãƒ•ãƒ¬ãƒ¼ãƒ ã®å…¥åŠ›ãŒæ®‹ã‚‰ãªã„ã‚ˆã†ã«ã—ã¾ã™ã€‚
         moveInput = Vector2.zero;
 
         Keyboard keyboard = Keyboard.current;
-
         if (keyboard == null)
             return;
 
-        // ƒQ[ƒ€ƒI[ƒo[’†‚Ì“ü—Í
-        if (GameManager.Instance != null &&
-            GameManager.Instance.isGameOver)
+        if (GameManager.Instance != null && GameManager.Instance.isGameOver)
         {
-            // ƒXƒy[ƒXƒL[‚ÅƒV[ƒ“‚ğÄ“Ç‚İ‚İ
+            // ã‚²ãƒ¼ãƒ ã‚ªãƒ¼ãƒãƒ¼ä¸­ã¯Spaceã§æ™‚é–“åœæ­¢ã‚’è§£é™¤ã—ã¦ç¾åœ¨ã®ã‚·ãƒ¼ãƒ³ã‚’å†èª­ã¿è¾¼ã¿ã—ã¾ã™ã€‚
             if (keyboard.spaceKey.wasPressedThisFrame)
             {
-                // ŠÔ’â~‚ğ‰ğœ
                 Time.timeScale = 1f;
-
-                // Œ»İ‚ÌƒV[ƒ“‚ğÄ“Ç‚İ‚İ
-                SceneManager.LoadScene(
-                    SceneManager.GetActiveScene().buildIndex
-                );
+                SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
             }
 
-            // ƒQ[ƒ€ƒI[ƒo[’†‚ÍˆÚ“®“ü—Í‚ğó‚¯•t‚¯‚È‚¢
+            // ã‚²ãƒ¼ãƒ ã‚ªãƒ¼ãƒãƒ¼ä¸­ã¯ç§»å‹•å…¥åŠ›ã‚’ç‰©ç†åˆ¶å¾¡ã¸æ¸¡ã—ã¾ã›ã‚“ã€‚
             return;
         }
 
-        // ¶‰E“ü—Í
+        // å·¦å³ã‚­ãƒ¼ã¾ãŸã¯A/Dã‚’æ°´å¹³ç§»å‹•å…¥åŠ›ã¸å¤‰æ›ã—ã¾ã™ã€‚
         if (keyboard.leftArrowKey.isPressed || keyboard.aKey.isPressed)
-        {
             moveInput.x = -1f;
-        }
         else if (keyboard.rightArrowKey.isPressed || keyboard.dKey.isPressed)
-        {
             moveInput.x = 1f;
-        }
 
-        // ã‰º“ü—Í
+        // ä¸Šä¸‹ã‚­ãƒ¼ã¾ãŸã¯W/Sã‚’è½ä¸‹é€Ÿåº¦ã®èª¿æ•´å…¥åŠ›ã¸å¤‰æ›ã—ã¾ã™ã€‚
         if (keyboard.upArrowKey.isPressed || keyboard.wKey.isPressed)
-        {
             moveInput.y = 1f;
-        }
         else if (keyboard.downArrowKey.isPressed || keyboard.sKey.isPressed)
-        {
             moveInput.y = -1f;
-        }
     }
 
-    /// <summary>
-    /// ¶‰EˆÚ“®
-    /// </summary>
-    private void MoveHorizontal()
+    public void TakeContactAction(Collider2D other, Vector2 contactPoint)
     {
-        if (moveInput.x == 0)
+        // æ¥è§¦å…ˆãŒç ´æ£„æ¸ˆã¿ãªã‚‰å‡¦ç†ã—ã¾ã›ã‚“ã€‚
+        if (other == null)
             return;
 
-        // “ü—Í•ûŒü‚Ì‘¬“x‚ªãŒÀ‚É’B‚µ‚Ä‚¢‚½‚ç‰Á‘¬‚µ‚È‚¢
-        if (moveInput.x > 0 && rb.linearVelocity.x >= maxHorizontalSpeed)
-            return;
-
-        if (moveInput.x < 0 && rb.linearVelocity.x <= -maxHorizontalSpeed)
-            return;
-
-        rb.AddForce(
-            Vector2.right * moveInput.x * horizontalForce,
-            ForceMode2D.Force
-        );
-    }
-
-    /// <summary>
-    /// —‰º‘¬“x‚ğ’²®
-    /// </summary>
-    private void ControlFallSpeed()
-    {
-        // ã“ü—ÍF—‰º‚ğŒ¸‘¬
-        // Å’á—‰º‘¬“x‚æ‚è‘¬‚­—‰º‚µ‚Ä‚¢‚éŠÔ‚¾‚¯Œ¸‘¬—Í‚ğ‰Á‚¦‚é
-        if (moveInput.y > 0 &&
-            rb.linearVelocity.y < -minFallSpeed)
-        {
-            rb.AddForce(
-                Vector2.up * fallDeceleration,
-                ForceMode2D.Force
-            );
-        }
-
-        // ‰º“ü—ÍF—‰º‚ğ‰Á‘¬
-        else if (moveInput.y < 0)
-        {
-            rb.AddForce(
-                Vector2.down * fallAcceleration,
-                ForceMode2D.Force
-            );
-        }
-    }
-
-    /// <summary>
-    /// ‘¬“x‚ğ§ŒÀ
-    /// </summary>
-    private void LimitSpeed()
-    {
-        Vector2 velocity = rb.linearVelocity;
-
-        // ‰º•ûŒü‚Ö‚ÌÅ‘å‘¬“x§ŒÀ
-        if (velocity.y < -maxFallSpeed)
-        {
-            velocity.y = -maxFallSpeed;
-        }
-
-        rb.linearVelocity = velocity;
-    }
-
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
-        // ƒ_ƒ[ƒW‚ğ—^‚¦‚È‚¢ƒIƒuƒWƒFƒNƒg‚È‚çI—¹
         ObjectEffectController objectEffect =
-            collision.gameObject.GetComponentInParent<ObjectEffectController>();
+            other.GetComponentInParent<ObjectEffectController>();
 
-        if (objectEffect != null && !objectEffect.ShouldDamagePlayer)
-            return;
-
-        // ƒ_ƒ[ƒWŠÔŠu’†‚È‚çˆ—‚µ‚È‚¢
+        // ã‚¢ã‚¤ãƒ†ãƒ ãªã‚‰ç¨®é¡åˆ¥ã®åŠ¹æœã‚’å‘¼ã³ã€é€šå¸¸ã®Colliderãªã‚‰æ¥è§¦ãƒ€ãƒ¡ãƒ¼ã‚¸ã«ã—ã¾ã™ã€‚
+        if (objectEffect != null)
+            objectEffect.OnPlayerContact(this, contactPoint);
+        else
+            TakeDamage(contactPoint);
+    }
+    public void TakeDamage(Vector2 contactPoint)
+    {
+        // ãƒ€ãƒ¡ãƒ¼ã‚¸é–“éš”ä¸­ã¯HPã‚„ãƒãƒƒã‚¯ãƒãƒƒã‚¯ã‚’é‡ã­ã¦é©ç”¨ã—ã¾ã›ã‚“ã€‚
         if (Time.time < lastDamageTime + damageInterval)
             return;
 
         lastDamageTime = Time.time;
-
-        // HP‚ğŒ¸‚ç‚·
         currentHp--;
-        Debug.Log($"ƒ_ƒ[ƒWI c‚èHPF{currentHp}");
+        Debug.Log($"ãƒ€ãƒ¡ãƒ¼ã‚¸ï¼ æ®‹ã‚ŠHPï¼š{currentHp}");
 
-        // ÚG‰ÓŠ‚©‚çƒvƒŒƒCƒ„[‚Ì’†S‚ÖŒü‚©‚¤•ûŒü‚ğæ“¾
-        ContactPoint2D contact = collision.GetContact(0);
-
-        Vector2 knockbackDirection =
-            ((Vector2)transform.position - contact.point).normalized;
-
-        // ÚGˆÊ’u‚ªƒvƒŒƒCƒ„[‚Ì’†S‚É‹ß‚¢ê‡‚Ì•ÛŒ¯
-        if (knockbackDirection == Vector2.zero)
+        // æ¥è§¦ç‚¹ã‹ã‚‰é›¢ã‚Œã‚‹æ–¹å‘ã¸ãƒãƒƒã‚¯ãƒãƒƒã‚¯ã•ã›ã¾ã™ã€‚
+        if (physicsController != null)
         {
-            knockbackDirection = -rb.linearVelocity.normalized;
+            Vector2 knockbackDirection =
+                ((Vector2)transform.position - contactPoint).normalized;
+
+            // æ¥è§¦ç‚¹ãŒPlayerã®ä¸­å¿ƒã¨ä¸€è‡´ã—ãŸå ´åˆã¯ã€ç¾åœ¨ã®é€Ÿåº¦ã¨åå¯¾å‘ãã‚’ä½¿ã„ã¾ã™ã€‚
+            if (knockbackDirection == Vector2.zero)
+                knockbackDirection = -physicsController.Velocity.normalized;
+
+            physicsController.ApplyKnockback(knockbackDirection);
         }
 
-        // ÚG‰ÓŠ‚Ì”½‘Î‘¤‚Ö’e‚­
-        rb.AddForce(knockbackDirection * knockbackForce, ForceMode2D.Impulse);
-
-        if (currentHp <= 0)
-        {
+        // HPãŒ0ä»¥ä¸‹ã«ãªã£ãŸã‚‰GameManagerã¸ã‚²ãƒ¼ãƒ ã‚ªãƒ¼ãƒãƒ¼ã‚’é€šçŸ¥ã—ã¾ã™ã€‚
+        if (currentHp <= 0 && GameManager.Instance != null)
             GameManager.Instance.GameOver();
-        }
     }
 
-    /// <summary>
-    /// HP‚ğ‰ñ•œ
-    /// ‰ñ•œ‚Å‚«‚½ê‡‚Ítrue‚ğ•Ô‚·
-    /// </summary>
     public bool TryHeal(int amount)
     {
+        // å›å¾©é‡ãŒç„¡åŠ¹ã€ã¾ãŸã¯HPãŒæº€ã‚¿ãƒ³ãªã‚‰å›å¾©ã§ãã¾ã›ã‚“ã€‚
         if (amount <= 0 || currentHp >= maxHp)
             return false;
 
         int previousHp = currentHp;
-
+        // æœ€å¤§HPã‚’è¶…ãˆãªã„ã‚ˆã†ã«å›å¾©é‡ã‚’åˆ¶é™ã—ã¾ã™ã€‚
         currentHp = Mathf.Min(currentHp + amount, maxHp);
-
-        Debug.Log($"HP‰ñ•œI {previousHp} ¨ {currentHp}");
-
+        Debug.Log($"HPå›å¾©ï¼ {previousHp} â†’ {currentHp}");
         return true;
     }
 
-    /// <summary>
-    /// ã•ûŒü‚Ö”½”­
-    /// </summary>
     public void Bounce(float upwardSpeed)
     {
-        rb.linearVelocity = new Vector2(
-            rb.linearVelocity.x,
-            upwardSpeed
-        );
+        // åç™ºé€Ÿåº¦ã®è¨­å®šã¯ç‰©ç†æ¼”ç®—ã‚’æ‹…å½“ã™ã‚‹ã‚³ãƒ³ãƒãƒ¼ãƒãƒ³ãƒˆã¸å§”è­²ã—ã¾ã™ã€‚
+        if (physicsController != null)
+            physicsController.Bounce(upwardSpeed);
     }
 }

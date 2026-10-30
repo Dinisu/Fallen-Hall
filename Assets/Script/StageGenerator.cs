@@ -4,33 +4,33 @@ using UnityEngine;
 
 public class StageGenerator : MonoBehaviour
 {
-    [Header("ƒvƒŒƒCƒ„[")]
+    [Header("ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼")]
     [SerializeField] private Transform player;
 
-    [Header("ƒXƒe[ƒWPrefab")]
+    [Header("ã‚¹ãƒ†ãƒ¼ã‚¸Prefab")]
     [SerializeField] private GameObject[] stagePrefabs;
 
-    [Header("¶¬İ’è")]
-    [SerializeField] private float pieceHeight = 20f;         //ƒXƒe[ƒWƒs[ƒX‚Ì‚‚³
-    [SerializeField] private int initialPieceCount = 5;       //‰ŠúƒXƒe[ƒWƒs[ƒX”
-    [SerializeField] private float spawnAheadDistance = 40f;  //‘O•ûƒXƒ|[ƒ“‹——£
-    [SerializeField] private float deleteBehindDistance = 30f;//Œã•û‹——£‚ğíœ
+    [Header("ç”Ÿæˆè¨­å®š")]
+    [SerializeField] private float pieceHeight = 20f;         //ã‚¹ãƒ†ãƒ¼ã‚¸ãƒ”ãƒ¼ã‚¹ã®é«˜ã•
+    [SerializeField] private int initialPieceCount = 5;       //åˆæœŸã‚¹ãƒ†ãƒ¼ã‚¸ãƒ”ãƒ¼ã‚¹æ•°
+    [SerializeField] private float spawnAheadDistance = 40f;  //å‰æ–¹ã‚¹ãƒãƒ¼ãƒ³è·é›¢
+    [SerializeField] private float deleteBehindDistance = 30f;//å¾Œæ–¹è·é›¢ã‚’å‰Šé™¤
 
-    // ¶¬Ï‚İƒXƒe[ƒWƒs[ƒX
+    // ç”Ÿæˆæ¸ˆã¿ã‚¹ãƒ†ãƒ¼ã‚¸ãƒ”ãƒ¼ã‚¹
     private readonly List<GameObject> generatedStagePieces = new();
 
-    // Ÿ‚É¶¬‚·‚éƒXƒe[ƒWƒs[ƒX‚Ì”Ô†
+    // æ¬¡ã«ç”Ÿæˆã™ã‚‹ã‚¹ãƒ†ãƒ¼ã‚¸ãƒ”ãƒ¼ã‚¹ã®ç•ªå·
     private int nextStagePieceIndex = 0;
 
-    // Ÿ‚ÌƒXƒe[ƒWƒs[ƒX‚ğ¶¬‚·‚éYÀ•W
+    // æ¬¡ã®ã‚¹ãƒ†ãƒ¼ã‚¸ãƒ”ãƒ¼ã‚¹ã‚’ç”Ÿæˆã™ã‚‹Yåº§æ¨™
     private float nextSpawnPieceY;
 
     private void Start()
     {
-        // ‚±‚ÌƒIƒuƒWƒFƒNƒg‚ÌYÀ•W‚ğŠJnˆÊ’u‚É‚·‚é
+        // ã“ã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®Yåº§æ¨™ã‚’é–‹å§‹ä½ç½®ã«ã™ã‚‹
         nextSpawnPieceY = transform.position.y;
 
-        // ‰ŠúƒXƒe[ƒWƒs[ƒX‚ğ¶¬
+        // åˆæœŸã‚¹ãƒ†ãƒ¼ã‚¸ãƒ”ãƒ¼ã‚¹ã‚’ç”Ÿæˆ
         for (int i = 0; i < initialPieceCount; i++)
         {
             GenerateStagePiece();
@@ -47,7 +47,7 @@ public class StageGenerator : MonoBehaviour
     }
 
     /// <summary>
-    /// ƒXƒe[ƒWƒs[ƒX‚ğ1‚Â¶¬‚·‚é
+    /// ã‚¹ãƒ†ãƒ¼ã‚¸ãƒ”ãƒ¼ã‚¹ã‚’1ã¤ç”Ÿæˆã™ã‚‹
     /// </summary>
     private void GenerateStagePiece()
     {
@@ -71,10 +71,10 @@ public class StageGenerator : MonoBehaviour
 
         generatedStagePieces.Add(stage);
 
-        // Ÿ‚Ì¶¬ˆÊ’u‚ğ‰º‚°‚é
+        // æ¬¡ã®ç”Ÿæˆä½ç½®ã‚’ä¸‹ã’ã‚‹
         nextSpawnPieceY -= pieceHeight;
 
-        // Prefab‚Ì”ÍˆÍ“à‚Åƒ‰ƒ“ƒ_ƒ€‚É‘I‘ğ
+        // Prefabã®ç¯„å›²å†…ã§ãƒ©ãƒ³ãƒ€ãƒ ã«é¸æŠ
         if (stagePrefabs != null && stagePrefabs.Length > 0)
         {
             nextStagePieceIndex = Random.Range(0, stagePrefabs.Length);
@@ -82,13 +82,13 @@ public class StageGenerator : MonoBehaviour
     }
 
     /// <summary>
-    /// ƒvƒŒƒCƒ„[‚Ìis‚É‡‚í‚¹‚Äæ‚ÌƒXƒe[ƒWƒs[ƒX‚ğ¶¬
+    /// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®é€²è¡Œã«åˆã‚ã›ã¦å…ˆã®ã‚¹ãƒ†ãƒ¼ã‚¸ãƒ”ãƒ¼ã‚¹ã‚’ç”Ÿæˆ
     /// </summary>
     private void GenerateStagesAhead()
     {
         float playerY = player.position.y;
 
-        // ¶¬Ï‚İƒXƒe[ƒWƒs[ƒX‚ÌI’[‚ªƒvƒŒƒCƒ„[‚É‹ß‚Ã‚¢‚½‚ç’Ç‰Á¶¬
+        // ç”Ÿæˆæ¸ˆã¿ã‚¹ãƒ†ãƒ¼ã‚¸ãƒ”ãƒ¼ã‚¹ã®çµ‚ç«¯ãŒãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã«è¿‘ã¥ã„ãŸã‚‰è¿½åŠ ç”Ÿæˆ
         while (nextSpawnPieceY > playerY - spawnAheadDistance)
         {
             GenerateStagePiece();
@@ -96,7 +96,7 @@ public class StageGenerator : MonoBehaviour
     }
 
     /// <summary>
-    /// ƒvƒŒƒCƒ„[‚ª’Ê‰ß‚µ‚½ƒXƒe[ƒWƒs[ƒX‚ğíœ
+    /// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ãŒé€šéã—ãŸã‚¹ãƒ†ãƒ¼ã‚¸ãƒ”ãƒ¼ã‚¹ã‚’å‰Šé™¤
     /// </summary>
     private void DeletePassedStagePieces()
     {
@@ -112,10 +112,10 @@ public class StageGenerator : MonoBehaviour
                 continue;
             }
 
-            // ƒXƒe[ƒWƒs[ƒX‚Ì‰º’[‚ğŒvZ
+            // ã‚¹ãƒ†ãƒ¼ã‚¸ãƒ”ãƒ¼ã‚¹ã®ä¸‹ç«¯ã‚’è¨ˆç®—
             float stagePieceBottomY = stage.transform.position.y - pieceHeight;
 
-            // ƒvƒŒƒCƒ„[‚ª\•ª‰º‚Ü‚Åi‚ñ‚¾‚çíœ
+            // ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ãŒååˆ†ä¸‹ã¾ã§é€²ã‚“ã ã‚‰å‰Šé™¤
             if (playerY < stagePieceBottomY - deleteBehindDistance)
             {
                 Destroy(stage);

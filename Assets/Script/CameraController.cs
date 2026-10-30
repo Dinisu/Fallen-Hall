@@ -2,14 +2,14 @@ using UnityEngine;
 
 public class CameraController : MonoBehaviour
 {
-    [SerializeField]private GameObject player;   // ƒvƒŒƒCƒ„[ƒIƒuƒWƒFƒNƒg
+    [SerializeField]private GameObject player;   // ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ
 
-    [SerializeField,Header("ƒJƒƒ‰‚ÌƒvƒŒƒCƒ„[‚É‘Î‚·‚éƒIƒtƒZƒbƒg")]
-    private Vector3 cameraOffset = new Vector3(0f, 5f, -10f); // Inspector ‚Å’²®‰Â”\
+    [SerializeField,Header("ã‚«ãƒ¡ãƒ©ã®ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã«å¯¾ã™ã‚‹ã‚ªãƒ•ã‚»ãƒƒãƒˆ")]
+    private Vector3 cameraOffset = new Vector3(0f, 5f, -10f); // Inspector ã§èª¿æ•´å¯èƒ½
 
     void Update()
     {
-        // ƒvƒŒƒCƒ„[ˆÊ’u + ”CˆÓ‚ÌƒIƒtƒZƒbƒg‚ğƒJƒƒ‰ˆÊ’u‚Éİ’è
+        // ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ä½ç½® + ä»»æ„ã®ã‚ªãƒ•ã‚»ãƒƒãƒˆã‚’ã‚«ãƒ¡ãƒ©ä½ç½®ã«è¨­å®š
         transform.position = player.transform.position + cameraOffset;
     }
 }

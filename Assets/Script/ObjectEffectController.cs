@@ -4,34 +4,28 @@ public class ObjectEffectController : MonoBehaviour
 {
     public enum ObjectType
     {
-        Spring,       // ƒoƒl
-        RecoveryItem, // ‰ñ•œƒAƒCƒeƒ€
-        DamageObject  // ƒ_ƒ[ƒWƒIƒuƒWƒFƒNƒg
+        Spring,
+        RecoveryItem,
+        DamageObject
     }
 
-    [Header("ƒIƒuƒWƒFƒNƒg‚Ìí—Ş")]
+    [Header("ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ç¨®é¡")]
     [SerializeField] private ObjectType objectType;
 
-    [Header("ƒoƒlİ’è")]
+    [Header("ãƒãƒè¨­å®š")]
     [SerializeField] private float springBounceSpeed = 12f;
     [SerializeField] private float springCooldown = 0.25f;
 
-    [Header("‰ñ•œƒAƒCƒeƒ€İ’è")]
+    [Header("å›å¾©ã‚¢ã‚¤ãƒ†ãƒ è¨­å®š")]
     [SerializeField] private int recoverAmount = 1;
-    [SerializeField] private bool destroyAfterUse = true;//g—pŒã‚ÉÁ‚¦‚é‚©‚Ç‚¤‚©
+    [SerializeField] private bool destroyAfterUse = true;
 
     private float lastSpringTime = -Mathf.Infinity;
     private bool consumed = false;
 
-    /// <summary>
-    /// ‚±‚ÌƒIƒuƒWƒFƒNƒg‚ªÚG‚Éƒ_ƒ[ƒW‚ğ—^‚¦‚é‚©
-    /// </summary>
     public bool ShouldDamagePlayer =>
         objectType == ObjectType.DamageObject;
 
-    /// <summary>
-    /// ’Êí‚ÌÕ“Ë
-    /// </summary>
     private void OnCollisionEnter2D(Collision2D collision)
     {
         PlayerController player =
@@ -40,12 +34,9 @@ public class ObjectEffectController : MonoBehaviour
         if (player == null)
             return;
 
-        ApplyEffect(player);
+        OnPlayerContact(player, collision.GetContact(0).point);
     }
 
-    /// <summary>
-    /// TriggerÚG
-    /// </summary>
     private void OnTriggerEnter2D(Collider2D other)
     {
         PlayerController player =
@@ -54,49 +45,38 @@ public class ObjectEffectController : MonoBehaviour
         if (player == null)
             return;
 
-        ApplyEffect(player);
+        OnPlayerContact(player, other.ClosestPoint(player.transform.position));
     }
 
-    /// <summary>
-    /// enum‚É‰‚¶‚ÄÚG‚Ìˆ—‚ğ•ÏX
-    /// </summary>
-    private void ApplyEffect(PlayerController player)
+    public void OnPlayerContact(PlayerController player, Vector2 contactPoint)
     {
+        if (player == null)
+            return;
+
         switch (objectType)
         {
             case ObjectType.Spring:
-
-                // ’ZŠÔ‚É‰½“x‚à”½”­‚·‚é‚Ì‚ğ–h‚®
                 if (Time.time < lastSpringTime + springCooldown)
                     return;
 
                 lastSpringTime = Time.time;
-
                 player.Bounce(springBounceSpeed);
                 break;
 
             case ObjectType.RecoveryItem:
-
-                // g—pÏ‚İ‚È‚çˆ—‚µ‚È‚¢
                 if (consumed)
                     return;
 
-                // HP‚ğ‰ñ•œ‚Å‚«‚½ê‡‚¾‚¯g—pÏ‚İ‚É‚·‚é
                 if (player.TryHeal(recoverAmount))
                 {
                     consumed = true;
-
                     if (destroyAfterUse)
-                    {
                         Destroy(gameObject);
-                    }
                 }
-
                 break;
 
             case ObjectType.DamageObject:
-
-                // ƒ_ƒ[ƒWˆ—‚ÍPlayerController‘¤‚Ås‚¤
+                player.TakeDamage(contactPoint);
                 break;
         }
     }

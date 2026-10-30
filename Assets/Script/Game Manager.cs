@@ -3,15 +3,20 @@ using TMPro;
 
 public class GameManager : MonoBehaviour
 {
-    [Header("ƒvƒŒƒCƒ„[")]
+    [Header("ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼")]
     [SerializeField] private Transform player;
 
-    [Header("[“xUI")]
+    [Header("æ·±åº¦UI")]
     [SerializeField] private TextMeshProUGUI depthText;
 
-    [Header("ƒQ[ƒ€ƒI[ƒo[UI")]
+    [Header("HP UI")]
+    [SerializeField] private TextMeshProUGUI hpText;
+
+    [Header("ã‚²ãƒ¼ãƒ ã‚ªãƒ¼ãƒãƒ¼UI")]
     [SerializeField] private TextMeshProUGUI gameOverText;
     [SerializeField] private TextMeshProUGUI scoreText;
+
+    private PlayerController playerController;
 
     public bool isGameOver = false;
 
@@ -20,30 +25,40 @@ public class GameManager : MonoBehaviour
     private void Awake()
     {
         Instance = this;
+        playerController = player != null ? player.GetComponent<PlayerController>() : null;
     }
 
     private void Update()
     {
         UpdateDepth();
+        UpdateHp();
     }
 
     /// <summary>
-    /// ƒvƒŒƒCƒ„[‚ÌYÀ•W‚©‚ç[“x‚ğŒvZ‚µ‚Ä•\¦
+    /// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®Yåº§æ¨™ã‹ã‚‰æ·±åº¦ã‚’è¨ˆç®—ã—ã¦è¡¨ç¤º
     /// </summary>
     private void UpdateDepth()
     {
         if (player == null || depthText == null)
             return;
 
-        // ‰º‚És‚­‚Ù‚Ç[“x‚ª‘‚¦‚é‚æ‚¤‚É‚·‚é
+        // ä¸‹ã«è¡Œãã»ã©æ·±åº¦ãŒå¢—ãˆã‚‹ã‚ˆã†ã«ã™ã‚‹
         float depth = Mathf.Max(0f, -player.position.y);
 
-        depthText.text = $"[“x:{depth:F1}m";
+        depthText.text = $"æ·±åº¦:{depth:F1}m";
     }
 
     /// <summary>
-    /// ƒQ[ƒ€ƒI[ƒo[ˆ—
+    /// ã‚²ãƒ¼ãƒ ã‚ªãƒ¼ãƒãƒ¼å‡¦ç†
     /// </summary>
+    private void UpdateHp()
+    {
+        if (playerController == null || hpText == null)
+            return;
+
+        hpText.text = $"HP: {playerController.CurrentHp} / {playerController.MaxHp}";
+    }
+
     public void GameOver()
     {
         if (isGameOver)
@@ -51,20 +66,20 @@ public class GameManager : MonoBehaviour
 
         isGameOver = true;
 
-        // ƒvƒŒƒCƒ„[‚Ì[“x‚ğæ“¾
+        // ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®æ·±åº¦ã‚’å–å¾—
         float depth = Mathf.Max(0f, -player.position.y);
 
-        // ƒXƒRƒA‚Æ[“x‚ğ•\¦
-        scoreText.text = $"ƒXƒRƒA\n[“xF{depth:F1}m";
+        // ã‚¹ã‚³ã‚¢ã¨æ·±åº¦ã‚’è¡¨ç¤º
+        scoreText.text = $"ã‚¹ã‚³ã‚¢\næ·±åº¦ï¼š{depth:F1}m";
 
-        // [“x‚ğ”ñ•\¦
+        // æ·±åº¦ã‚’éè¡¨ç¤º
         depthText.gameObject.SetActive(false);
-        // ƒQ[ƒ€ƒI[ƒo[UI‚ğ•\¦
+        // ã‚²ãƒ¼ãƒ ã‚ªãƒ¼ãƒãƒ¼UIã‚’è¡¨ç¤º
         gameOverText.gameObject.SetActive(true);
 
-        // ƒQ[ƒ€‚ğ’â~
+        // ã‚²ãƒ¼ãƒ ã‚’åœæ­¢
         Time.timeScale = 0f;
 
-        Debug.Log("ƒQ[ƒ€ƒI[ƒo[");
+        Debug.Log("ã‚²ãƒ¼ãƒ ã‚ªãƒ¼ãƒãƒ¼");
     }
 }
